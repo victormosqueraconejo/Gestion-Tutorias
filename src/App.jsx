@@ -1,11 +1,16 @@
 import { InstitutionPanel } from './components/layout/InstitutionPanel'
 import { LoginForm } from './features/auth/components/LoginForm'
 import { StudentRegistration } from './features/student/StudentRegistration'
+import { StudentProfile } from './features/student/StudentProfile'
 import './App.css'
 
 function App() {
   if (window.location.pathname === '/registro-estudiante') {
     return <StudentRegistration />
+  }
+
+  if (['/perfil', '/perfil-estudiante'].includes(window.location.pathname)) {
+    return <StudentProfile />
   }
 
   return (
