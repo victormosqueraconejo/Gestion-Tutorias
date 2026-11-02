@@ -1,0 +1,99 @@
+.registration-page {
+  min-height: 100svh;
+  padding: 1rem;
+  background: var(--surface);
+  color: var(--on-surface);
+  font-family: 'Inter', sans-serif;
+}
+
+.registration-shell { width: 100%; max-width: 1024px; margin: auto; padding: 2rem 1rem; }
+.registration-header, .registration-brand, .secure-label, .title-line, .step-badge, .registration-actions, .registration-footer, .student-info, .conflict-links { display: flex; align-items: center; }
+.registration-header { justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+.registration-brand { gap: .5rem; }
+.registration-brand > span { width: 2.5rem; height: 2.5rem; display: grid; place-items: center; border-radius: .75rem; color: white; background: var(--primary); }
+.registration-brand strong, .registration-brand small { display: block; }
+.registration-brand strong { color: var(--secondary); font-size: .875rem; letter-spacing: .08em; text-transform: uppercase; }
+.registration-brand small, .secure-label { color: var(--on-surface-variant); font-size: .875rem; }
+.registration-brand small { line-height: 1.25rem; }
+.secure-label { gap: .25rem; }
+.registration-card { overflow: hidden; border-radius: .75rem; background: var(--surface-lowest); box-shadow: 0 20px 45px rgb(24 28 34 / 12%); }
+.registration-card-content { display: flex; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+.registration-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding-bottom: 1.5rem; }
+.title-line { flex-wrap: wrap; gap: .75rem; }
+.registration-title h1 { margin: 0; font-size: 2rem; line-height: 2.5rem; }
+.registration-title p { margin: .25rem 0 0; color: var(--on-surface-variant); line-height: 1.5rem; }
+.role-badge, .step-badge { gap: .375rem; border-radius: 999px; padding: .25rem .75rem; font-size: .875rem; font-weight: 600; }
+.role-badge { color: #001b3d; background: var(--secondary-fixed); }
+.step-badge { flex: 0 0 auto; border-radius: .5rem; color: var(--on-surface); background: var(--surface-low); }
+.registration-form { display: flex; flex-direction: column; gap: 1.5rem; }
+.registration-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.registration-wide { grid-column: 1 / -1; }
+.registration-field { display: flex; min-width: 0; flex-direction: column; gap: .375rem; }
+.registration-field > label { color: var(--on-surface); font-size: .875rem; font-weight: 600; }
+.registration-field > label span { color: var(--error); }
+.registration-input { position: relative; display: flex; align-items: center; }
+.registration-input > .material-symbols-outlined:first-child { position: absolute; left: .875rem; color: var(--on-surface-variant); pointer-events: none; }
+.registration-input > .material-symbols-outlined:last-child { position: absolute; right: .75rem; color: var(--on-surface-variant); pointer-events: none; }
+.registration-input input, .registration-input select { width: 100%; min-height: 3rem; padding: .75rem 2.75rem; border: 1px solid transparent; border-radius: .5rem; outline: none; color: var(--on-surface); background: var(--surface-low); font: inherit; font-size: 1rem; }
+.registration-input select { appearance: none; cursor: pointer; }
+.registration-input input:focus, .registration-input select:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgb(0 92 184 / 18%); }
+.registration-input button { position: absolute; right: .5rem; display: grid; place-items: center; min-width: 2.25rem; min-height: 2.25rem; padding: .25rem; border: 0; color: var(--on-surface-variant); background: transparent; cursor: pointer; }
+.registration-input button .material-symbols-outlined { font-size: 1.25rem; }
+.registration-help { color: var(--on-surface-variant); font-size: .75rem; line-height: 1.25rem; }
+.registration-error { color: var(--error); font-size: .75rem; line-height: 1.25rem; }
+.has-error .registration-input input, .has-error .registration-input select { border-color: var(--error); background: rgb(255 218 214 / 35%); }
+.registration-conflict { display: flex; align-items: flex-start; gap: .75rem; padding: 1rem; border-radius: .5rem; color: var(--on-error-container); background: var(--error-container); }
+.registration-conflict > .material-symbols-outlined { flex: 0 0 auto; color: var(--error); }
+.conflict-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.conflict-heading button { min-width: 2.75rem; min-height: 2.75rem; padding: .25rem; border: 0; color: inherit; background: transparent; cursor: pointer; }
+.registration-conflict p { margin: .25rem 0 0; line-height: 1.5rem; }
+.conflict-links { gap: 1rem; margin-top: .5rem; }
+.conflict-links a, .registration-actions a, .registration-footer a, .terms-row a { color: var(--primary); font-weight: 600; text-decoration: underline; }
+.strength-panel { display: flex; flex-direction: column; gap: .75rem; padding: 1rem; border-radius: .75rem; background: var(--surface-low); }
+.strength-heading { display: flex; align-items: center; justify-content: space-between; }
+.strength-heading > span { display: flex; align-items: center; gap: .375rem; font-size: .875rem; font-weight: 600; }
+.strength-heading .material-symbols-outlined { color: var(--primary); font-size: 1.25rem; }
+.strength-fuerte, .strength-media, .strength-débil { color: var(--primary); }
+.strength-media { color: var(--tertiary, #9a4600); }
+.strength-débil { color: var(--error); }
+.strength-bars { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; height: .5rem; }
+.strength-bars span { border-radius: 999px; background: var(--surface-high); }
+.strength-fill-fuerte { background: var(--primary) !important; }
+.strength-fill-media { background: var(--tertiary, #9a4600) !important; }
+.strength-fill-débil { background: var(--error) !important; }
+.requirements { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; padding-top: .25rem; }
+.requirement { display: flex; align-items: center; gap: .5rem; color: var(--on-surface-variant); font-size: .75rem; }
+.requirement .material-symbols-outlined { font-size: 1.25rem; }
+.requirement.met { color: var(--on-surface); }
+.requirement.met .material-symbols-outlined { color: var(--primary); }
+.student-info { align-items: flex-start; gap: .75rem; padding: 1rem; border-radius: .75rem; color: #001b3e; background: var(--primary-fixed); }
+.student-info > span { display: grid; place-items: center; width: 2rem; height: 2rem; flex: 0 0 auto; border-radius: 999px; color: white; background: var(--primary); }
+.student-info p { margin: 0; line-height: 1.5rem; }
+.terms-row { display: flex; align-items: flex-start; gap: .75rem; }
+.terms-row input { width: 1.25rem; height: 1.25rem; flex: 0 0 auto; margin-top: .25rem; accent-color: var(--primary); }
+.terms-row label { line-height: 1.5rem; }
+.registration-actions { justify-content: space-between; gap: 1rem; padding-top: 1rem; color: var(--on-surface-variant); text-align: right; }
+.create-button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 3rem; padding: .75rem 2rem; border: 0; border-radius: .5rem; color: white; background: var(--primary); font: inherit; font-size: .875rem; font-weight: 600; cursor: pointer; }
+.create-button:hover { background: var(--primary-container); }
+.registration-footer { justify-content: space-between; gap: 1rem; margin: 0 -2rem -2rem; padding: 1rem 2rem; color: var(--on-surface-variant); background: var(--surface-high); font-size: .875rem; }
+.registration-footer span:first-child { display: flex; align-items: center; gap: .5rem; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+
+@media (max-width: 700px) {
+  .registration-page { padding: 0; }
+  .registration-shell { padding: 1rem; }
+  .registration-header, .registration-title, .registration-actions, .registration-footer { align-items: flex-start; flex-direction: column; }
+  .secure-label { align-self: flex-end; }
+  .registration-grid { grid-template-columns: 1fr; }
+  .registration-wide { grid-column: auto; }
+  .requirements { grid-template-columns: repeat(2, 1fr); }
+  .registration-actions { text-align: left; }
+  .create-button { width: 100%; }
+  .registration-footer { margin: 0 -1rem -1rem; padding: 1rem; }
+}
+
+@media (max-width: 420px) {
+  .registration-card-content { padding: 1rem; }
+  .registration-title h1 { font-size: 1.75rem; line-height: 2.25rem; }
+  .registration-footer { font-size: .75rem; }
+}
