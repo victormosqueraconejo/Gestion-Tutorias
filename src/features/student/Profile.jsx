@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon } from '../../components/ui/Icon'
-import { getAuthenticatedUser, saveAuthenticatedUser } from '../auth/authApi'
+import { clearAuthenticatedUser, getAuthenticatedUser, getRolePath, saveAuthenticatedUser } from '../auth/authApi'
 import { updateStudentUser } from './studentApi'
 import './student-profile.css'
 
@@ -47,6 +47,7 @@ export function Profile() {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false)
   const [logoutModalOpen, setLogoutModalOpen] = useState(false)
   const profileMenuRef = useRef(null)
+  const homePath = getRolePath(user?.rol) || '/estudiante'
 
   function updateDraft(field, value) {
     setDraft((current) => ({ ...current, [field]: value }))
@@ -122,13 +123,13 @@ export function Profile() {
     <div className="profile-page">
       <header className="profile-topbar">
         <div className="profile-topbar-inner">
-          <a className="profile-brand" href="/" aria-label="Ir al inicio del Portal Académico">
+          <a className="profile-brand" href={homePath} aria-label="Ir al inicio del Portal Académico">
             <span className="profile-brand-mark"><Icon filled>school</Icon></span>
             <span>Portal Académico</span>
           </a>
 
           <nav className="profile-nav" aria-label="Navegación principal">
-            <a href="/">Inicio</a>
+            <a href={homePath}>Inicio</a>
             <a href="#cursos">Mis Cursos</a>
             <a className="active" aria-current="page" href="/perfil">Perfil</a>
             <a href="#tramites">Trámites</a>
@@ -314,7 +315,7 @@ export function Profile() {
             <p>Tu sesión actual se cerrará y tendrás que ingresar nuevamente para acceder al Portal Académico.</p>
             <div className="logout-actions">
               <button className="logout-cancel" type="button" onClick={() => setLogoutModalOpen(false)}>Cancelar</button>
-              <button className="logout-confirm" type="button" onClick={() => { window.location.href = '/' }}>Cerrar sesión</button>
+              <button className="logout-confirm" type="button" onClick={() => { clearAuthenticatedUser(); window.location.assign('/') }}>Cerrar sesión</button>
             </div>
           </section>
         </div>

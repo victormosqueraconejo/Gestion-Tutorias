@@ -1,5 +1,6 @@
 import { InstitutionPanel } from './components/layout/InstitutionPanel'
 import { LoginForm } from './features/auth/components/LoginForm'
+import { getAuthenticatedUser, getRolePath } from './features/auth/authApi'
 import { StudentRegistration } from './features/student/StudentRegistration'
 import { Profile } from './features/student/Profile'
 import { StudentHome } from './features/student/StudentHome'
@@ -10,6 +11,14 @@ import { AdministratorAcademicStructure } from './features/administrator/Adminis
 import './App.css'
 
 function App() {
+  const authenticatedUser = getAuthenticatedUser()
+  const authenticatedPath = getRolePath(authenticatedUser?.rol)
+
+  if (window.location.pathname === '/' && authenticatedPath) {
+    window.location.replace(authenticatedPath)
+    return null
+  }
+
   if (window.location.pathname === '/registro-estudiante') {
     return <StudentRegistration />
   }

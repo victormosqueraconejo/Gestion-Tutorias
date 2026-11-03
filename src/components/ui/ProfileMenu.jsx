@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon } from './Icon'
+import { clearAuthenticatedUser } from '../../features/auth/authApi'
 import './profile-menu.css'
 
 const defaultUser = {
@@ -30,6 +31,7 @@ export function ProfileMenu({ user = defaultUser, avatarUrl, compact = false }) 
   }, [])
 
   function handleLogout() {
+    clearAuthenticatedUser()
     setOpen(false)
     window.location.assign('/')
   }

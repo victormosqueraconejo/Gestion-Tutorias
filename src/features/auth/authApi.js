@@ -80,6 +80,11 @@ export function getAuthenticatedUser() {
   }
 }
 
+export function clearAuthenticatedUser() {
+  window.localStorage.removeItem(SESSION_KEY)
+  window.sessionStorage.removeItem(SESSION_KEY)
+}
+
 export function getRolePath(role) {
   const normalizedRole = role?.toLowerCase()
   const rolePaths = {
