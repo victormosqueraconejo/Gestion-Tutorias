@@ -5,6 +5,8 @@ import { StudentProfile } from './features/student/StudentProfile'
 import { StudentHome } from './features/student/StudentHome'
 import { TeacherDashboard } from './features/teacher/TeacherDashboard'
 import { AdministratorDashboard } from './features/administrator/AdministratorDashboard'
+import { AdministratorUsers } from './features/administrator/AdministratorUsers'
+import { AdministratorAcademicStructure } from './features/administrator/AdministratorAcademicStructure'
 import './App.css'
 
 function App() {
@@ -22,6 +24,14 @@ function App() {
 
   if (['/profesor', '/profesor/inicio'].includes(window.location.pathname)) {
     return <TeacherDashboard />
+  }
+
+  if (window.location.pathname === '/administrador/usuarios') {
+    return <AdministratorUsers />
+  }
+
+  if (window.location.pathname === '/administrador/estructura-academica') {
+    return <AdministratorAcademicStructure />
   }
 
   if (['/administrador', '/administrador/inicio', '/admin'].includes(window.location.pathname)) {

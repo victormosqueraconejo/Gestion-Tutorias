@@ -4,8 +4,8 @@ import './administrator-dashboard.css'
 
 const navigation = [
   ['Inicio', 'home', '/administrador'],
-  ['Usuarios', 'group', '#usuarios'],
-  ['Estructura académica', 'account_tree', '#estructura-academica'],
+  ['Usuarios', 'group', '/administrador/usuarios'],
+  ['Estructura académica', 'account_tree', '/administrador/estructura-academica'],
   ['Recursos', 'menu_book', '#recursos'],
   ['Demanda', 'trending_up', '#demanda'],
   ['Reportes', 'bar_chart', '#reportes'],
@@ -26,7 +26,7 @@ const actions = [
   ['Reporte ejecutivo', 'Generar informe', 'description', 'neutral'],
 ]
 
-function AdministratorSidebar() {
+export function AdministratorSidebar({ activeItem = 'Inicio' }) {
   return (
     <aside className="administrator-sidebar">
       <div>
@@ -35,8 +35,8 @@ function AdministratorSidebar() {
           <span><strong>Tutorías Pro</strong><small>Campus Digital</small></span>
         </a>
         <nav className="administrator-nav" aria-label="Navegación administrativa">
-          {navigation.map(([label, icon, href], index) => (
-            <a className={index === 0 ? 'is-active' : ''} href={href} aria-current={index === 0 ? 'page' : undefined} key={label}>
+          {navigation.map(([label, icon, href]) => (
+            <a className={label === activeItem ? 'is-active' : ''} href={href} aria-current={label === activeItem ? 'page' : undefined} key={label}>
               <Icon>{icon}</Icon><span>{label}</span>
             </a>
           ))}
@@ -50,7 +50,7 @@ function AdministratorSidebar() {
   )
 }
 
-function AdministratorTopbar() {
+export function AdministratorTopbar() {
   return (
     <header className="administrator-topbar">
       <label className="administrator-search">
