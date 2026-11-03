@@ -1,7 +1,7 @@
 import { InstitutionPanel } from './components/layout/InstitutionPanel'
 import { LoginForm } from './features/auth/components/LoginForm'
 import { StudentRegistration } from './features/student/StudentRegistration'
-import { StudentProfile } from './features/student/StudentProfile'
+import { Profile } from './features/student/Profile'
 import { StudentHome } from './features/student/StudentHome'
 import { TeacherDashboard } from './features/teacher/TeacherDashboard'
 import { AdministratorDashboard } from './features/administrator/AdministratorDashboard'
@@ -14,8 +14,8 @@ function App() {
     return <StudentRegistration />
   }
 
-  if (['/perfil', '/perfil-estudiante'].includes(window.location.pathname)) {
-    return <StudentProfile />
+  if (window.location.pathname === '/perfil') {
+    return <Profile />
   }
 
   if (['/estudiante', '/estudiante/inicio'].includes(window.location.pathname)) {

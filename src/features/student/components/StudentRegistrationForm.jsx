@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Icon } from '../../../components/ui/Icon'
 import { StatusAlert } from '../../../components/ui/StatusAlert'
+import { saveAuthenticatedUser } from '../../auth/authApi'
 import { createStudentUser } from '../studentApi'
 import { getPasswordRequirements, validateRegistration } from '../validation'
 import { PasswordStrength } from './PasswordStrength'
@@ -64,17 +65,18 @@ export function StudentRegistrationForm() {
     setStatus(null)
 
     try {
-      await createStudentUser({
+      const payload = await createStudentUser({
         name: values.fullName,
         email: values.email,
         password: values.password,
       })
-      setStatus({
-        tone: 'success',
-        title: 'Cuenta creada correctamente',
-        message: 'Tu cuenta de estudiante fue creada. Ya puedes iniciar sesión con tus credenciales.',
-      })
-      setValues((current) => ({ ...current, password: '', confirmPassword: '' }))
+      const user = payload?.usuario || payload
+      if (!user?._id && !user?.correo) {
+        throw new Error('El servidor no devolvió los datos del usuario creado.')
+      }
+
+      saveAuthenticatedUser(user, true)
+      window.location.assign('/estudiante')
     } catch (error) {
       setStatus({
         tone: 'error',

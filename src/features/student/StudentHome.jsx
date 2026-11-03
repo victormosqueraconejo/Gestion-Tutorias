@@ -1,4 +1,5 @@
 import { Icon } from '../../components/ui/Icon'
+import { getAuthenticatedUser } from '../auth/authApi'
 import { StudentSidebar } from './components/StudentSidebar'
 import { StudentTopbar } from './components/StudentTopbar'
 import { StudentMetricCard } from './components/StudentMetricCard'
@@ -17,18 +18,24 @@ const requests = [
 ]
 
 export function StudentHome() {
+  const user = getAuthenticatedUser()
+  const firstName = user?.nombre?.trim().split(/\s+/)[0] || 'Estudiante'
+  const semester = user?.perfil_estudiante?.semestre_actual
+  const career = user?.perfil_estudiante?.carrera_id || 'tu programa académico'
+  const status = user?.estado || 'activo'
+
   return (
     <div className="student-home">
-      <StudentSidebar />
+      <StudentSidebar user={user} />
       <div className="student-home-content">
-        <StudentTopbar />
+        <StudentTopbar user={user} />
         <main className="student-home-main">
           <section className="student-hero-grid">
             <div className="student-welcome-card">
-              <span className="student-semester-pill"><Icon>arrow_back_ios_new</Icon> Semestre 2024-II • Semana 9</span>
+              <span className="student-semester-pill"><Icon>school</Icon> Semestre {semester || 'no asignado'} • Cuenta {status}</span>
               <div>
-                <h1>¡Hola de nuevo, <em>Valeria</em>! ¿En qué podemos ayudarte hoy?</h1>
-                <p>Acompañamiento especializado uno a uno y sesiones colaborativas para potenciar tu rendimiento académico en Ciencias e Ingeniería.</p>
+                <h1>¡Hola, <em>{firstName}</em>! ¿En qué podemos ayudarte hoy?</h1>
+                <p>Acompañamiento especializado para estudiantes de {career} y sesiones colaborativas para potenciar tu rendimiento académico.</p>
               </div>
               <div className="student-hero-actions">
                 <a className="student-primary-button" href="#buscar-apoyo"><Icon>search_check</Icon>Buscar apoyo académico<Icon>arrow_forward</Icon></a>

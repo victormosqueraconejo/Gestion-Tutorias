@@ -1,11 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon } from '../../components/ui/Icon'
+import { getAuthenticatedUser, saveAuthenticatedUser } from '../auth/authApi'
+import { updateStudentUser } from './studentApi'
 import './student-profile.css'
-
-const initialProfile = {
-  name: 'Valeria Sofía Martínez',
-  semester: '6',
-}
 
 const avatarUrl =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuAV81x7drzy3utdP6syacZCO9rcbGIQJb8xnK4pE8hoD8JIpWWwi_mys7y9IMbFJpu9z8N1eEIjbS3yJylsMDp1Y5ckXI-B1Mrn5DEIeo7nMIOVSoEqRbIdkwrfwrPRQQKL7nwH2_f15974twE46-f4eXrvvjtClfbATI5QYPWgzVk0hcRGby50QleYaCORBxZ6XXb2ZH6Sj8l3pJ_rvLIgQrbKjMXlQ7GSeq-x4Ho'
@@ -26,12 +23,27 @@ function ProfileField({ label, status, statusIcon, children, help, editable = fa
   )
 }
 
-export function StudentProfile() {
+function getProfileValues(user) {
+  return {
+    name: user?.nombre || '',
+    email: user?.correo || '',
+    role: user?.rol || '',
+    status: user?.estado || '',
+    semester: user?.perfil_estudiante?.semestre_actual?.toString() || '',
+    career: user?.perfil_estudiante?.carrera_id || '',
+    id: user?._id || '',
+  }
+}
+
+export function Profile() {
+  const user = getAuthenticatedUser()
+  const initialProfile = getProfileValues(user)
   const [profile, setProfile] = useState(initialProfile)
   const [draft, setDraft] = useState(initialProfile)
   const [avatar, setAvatar] = useState(avatarUrl)
-  const [toastVisible, setToastVisible] = useState(true)
+  const [toastVisible, setToastVisible] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [profileMenuOpen, setProfileMenuOpen] = useState(false)
   const [logoutModalOpen, setLogoutModalOpen] = useState(false)
   const profileMenuRef = useRef(null)
@@ -50,14 +62,33 @@ export function StudentProfile() {
     setDraft(profile)
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
+    setErrorMessage('')
     setSaving(true)
-    window.setTimeout(() => {
-      setProfile(draft)
-      setSaving(false)
+    try {
+      const updatedUser = await updateStudentUser({
+        userId: user?._id,
+        name: draft.name,
+        semester: draft.semester,
+      })
+      const mergedUser = {
+        ...user,
+        ...updatedUser,
+        perfil_estudiante: {
+          ...user?.perfil_estudiante,
+          ...updatedUser?.perfil_estudiante,
+        },
+      }
+      saveAuthenticatedUser(mergedUser, Boolean(window.localStorage.getItem('gestion-tutorias.usuario')))
+      setProfile(getProfileValues(mergedUser))
+      setDraft(getProfileValues(mergedUser))
       setToastVisible(true)
-    }, 600)
+    } catch (error) {
+      setErrorMessage(error.message)
+    } finally {
+      setSaving(false)
+    }
   }
 
   function openLogoutModal() {
@@ -99,14 +130,14 @@ export function StudentProfile() {
           <nav className="profile-nav" aria-label="Navegación principal">
             <a href="/">Inicio</a>
             <a href="#cursos">Mis Cursos</a>
-            <a className="active" aria-current="page" href="/perfil-estudiante">Perfil</a>
+            <a className="active" aria-current="page" href="/perfil">Perfil</a>
             <a href="#tramites">Trámites</a>
           </nav>
 
           <div className="profile-user" ref={profileMenuRef}>
             <div className="profile-user-copy">
-              <span>Estudiante Regular</span>
-              <small>2024-II</small>
+              <span>{profile.role || 'Rol no disponible'}</span>
+              <small>{profile.status || 'Estado no disponible'}</small>
             </div>
             <button
               className={`profile-avatar-button ${profileMenuOpen ? 'is-open' : ''}`}
@@ -115,7 +146,7 @@ export function StudentProfile() {
               aria-expanded={profileMenuOpen}
               onClick={() => setProfileMenuOpen((open) => !open)}
             >
-              <img src={avatar} alt="Perfil de Valeria Sofía Martínez" />
+              <img src={avatar} alt={`Perfil de ${profile.name || 'estudiante'}`} />
             </button>
 
             {profileMenuOpen && (
@@ -123,17 +154,17 @@ export function StudentProfile() {
                 <div className="profile-menu-summary">
                   <img src={avatar} alt="" />
                   <span>
-                    <strong>Valeria Sofía Martínez</strong>
-                    <small>valeria.martinez@estudiantes.edu</small>
-                    <b>Estudiante</b>
+                    <strong>{profile.name || 'Nombre no disponible'}</strong>
+                    <small>{profile.email || 'Correo no disponible'}</small>
+                    <b>{profile.role || 'Rol no disponible'}</b>
                   </span>
                 </div>
                 <div className="profile-menu-divider" />
-                <a className="profile-menu-item" href="/perfil-estudiante" role="menuitem" onClick={() => setProfileMenuOpen(false)}>
+                <a className="profile-menu-item" href="/perfil" role="menuitem" onClick={() => setProfileMenuOpen(false)}>
                   <Icon>person</Icon>
                   <span>Mi perfil</span>
                 </a>
-                <a className="profile-menu-item" href="#preferencias" role="menuitem" onClick={() => setProfileMenuOpen(false)}>
+                <a className="profile-menu-item" href="/perfil" role="menuitem" onClick={() => setProfileMenuOpen(false)}>
                   <Icon>tune</Icon>
                   <span>Preferencias</span>
                 </a>
@@ -159,11 +190,18 @@ export function StudentProfile() {
               <span className="toast-icon"><Icon filled>check_circle</Icon></span>
               <div>
                 <strong>¡Cambios guardados con éxito!</strong>
-                <p>Tu información académica ha sido actualizada correctamente en el sistema institucional.</p>
+                <p>Tu información de perfil ha sido actualizada en esta sesión.</p>
               </div>
               <button type="button" aria-label="Cerrar notificación" onClick={() => setToastVisible(false)}>
                 <Icon>close</Icon>
               </button>
+            </div>
+          )}
+          {errorMessage && (
+            <div className="profile-error" role="alert">
+              <Icon>error</Icon>
+              <span>{errorMessage}</span>
+              <button type="button" aria-label="Cerrar error" onClick={() => setErrorMessage('')}><Icon>close</Icon></button>
             </div>
           )}
 
@@ -175,7 +213,7 @@ export function StudentProfile() {
             </div>
             <div className="enrollment-status">
               <Icon>verified</Icon>
-              <span><small>Estado de matrícula</small><strong>Matriculado Activo 2024-II</strong></span>
+              <span><small>Estado de la cuenta</small><strong>{profile.status || 'No disponible'}</strong></span>
             </div>
           </section>
 
@@ -190,9 +228,9 @@ export function StudentProfile() {
                   </label>
                   <input id="avatarUploadInput" accept="image/png, image/jpeg" type="file" onChange={handleAvatarChange} />
                 </div>
-                <span className="role-pill"><Icon filled>school</Icon> Rol: Estudiante</span>
-                <h2>{profile.name}</h2>
-                <p>Código: <strong>EST-20210492</strong></p>
+                <span className="role-pill"><Icon filled>school</Icon> Rol: {profile.role || 'No disponible'}</span>
+                <h2>{profile.name || 'Nombre no disponible'}</h2>
+                <p>ID: <strong>{profile.id || 'No disponible'}</strong></p>
                 <div className="photo-note">
                   <strong><Icon>info</Icon> Especificaciones de foto:</strong>
                   <span>Formato JPG o PNG. Tamaño máximo 2MB. Fondo neutro y rostro completamente despejado según reglamento oficial.</span>
@@ -236,21 +274,21 @@ export function StudentProfile() {
                 </ProfileField>
 
                 <ProfileField label="Correo institucional" status="Bloqueado por sistema" statusIcon="lock" help="Cuenta vinculada al dominio del campus universitario. No es posible transferir o renombrar.">
-                  <div className="profile-input readonly-input"><Icon>mail</Icon><input readOnly value="valeria.martinez@estudiantes.edu" /><Icon>lock</Icon></div>
+                  <div className="profile-input readonly-input"><Icon>mail</Icon><input readOnly value={profile.email} placeholder="Correo no disponible" /><Icon>lock</Icon></div>
                 </ProfileField>
 
                 <ProfileField label="Carrera" status="Solo lectura" statusIcon="lock" help="Solo lectura administrada por Secretaría Académica.">
-                  <div className="profile-input readonly-input"><Icon>domain</Icon><input readOnly value="Ingeniería de Sistemas y Computación" /><Icon>verified_user</Icon></div>
+                  <div className="profile-input readonly-input"><Icon>domain</Icon><input readOnly value={profile.career} placeholder="Carrera no asignada" /><Icon>verified_user</Icon></div>
                   <div className="managed-note"><Icon>admin_panel_settings</Icon> Solo lectura administrada por Secretaría Académica.</div>
                 </ProfileField>
 
-                <ProfileField label="Semestre actual *" status="Activo para selección" statusIcon="calendar_month" editable help="Editable únicamente para estudiantes activos según la carga lectiva del ciclo 2024-II.">
-                  <div className="profile-input editable-input"><Icon>school</Icon><select value={draft.semester} onChange={(event) => updateDraft('semester', event.target.value)}>{Array.from({ length: 10 }, (_, index) => <option value={index + 1} key={index + 1}>{index + 1}° Semestre</option>)}</select><Icon>expand_more</Icon></div>
+                <ProfileField label="Semestre actual *" status="Activo para selección" statusIcon="calendar_month" editable help="Este valor se carga desde el perfil_estudiante retornado por la API.">
+                  <div className="profile-input editable-input"><Icon>school</Icon><select required value={draft.semester} onChange={(event) => updateDraft('semester', event.target.value)}><option value="" disabled>Semestre no asignado</option>{Array.from({ length: 10 }, (_, index) => <option value={index + 1} key={index + 1}>{index + 1}° Semestre</option>)}</select><Icon>expand_more</Icon></div>
                 </ProfileField>
 
                 <div className="access-card">
                   <div><span className="access-icon"><Icon>security</Icon></span><span><strong>Privilegios y Acceso de Red</strong><small>Nivel de autorización en el Campus Virtual</small></span></div>
-                  <b>Rol: Estudiante</b>
+                  <b>Rol: {profile.role || 'No disponible'}</b>
                 </div>
 
                 <div className="form-actions">

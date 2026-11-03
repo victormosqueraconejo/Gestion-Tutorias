@@ -3,9 +3,9 @@ import { Icon } from './Icon'
 import './profile-menu.css'
 
 const defaultUser = {
-  name: 'Valeria Sofía Martínez',
-  email: 'valeria.martinez@estudiantes.edu',
-  role: 'Estudiante',
+  name: 'Usuario',
+  email: 'Correo no disponible',
+  role: 'Rol no disponible',
 }
 
 export function ProfileMenu({ user = defaultUser, avatarUrl, compact = false }) {
@@ -56,10 +56,10 @@ export function ProfileMenu({ user = defaultUser, avatarUrl, compact = false }) 
             </span>
           </div>
           <div className="profile-dropdown-divider" />
-          <a className="profile-dropdown-item" href="/perfil-estudiante" role="menuitem" onClick={() => setOpen(false)}>
+          <a className="profile-dropdown-item" href="/perfil" role="menuitem" onClick={() => setOpen(false)}>
             <Icon>person</Icon><span>Mi perfil</span>
           </a>
-          <a className="profile-dropdown-item" href="/perfil-estudiante" role="menuitem" onClick={() => setOpen(false)}>
+          <a className="profile-dropdown-item" href="/perfil" role="menuitem" onClick={() => setOpen(false)}>
             <Icon>tune</Icon><span>Preferencias</span>
           </a>
           <a className="profile-dropdown-item" href="#ayuda" role="menuitem" onClick={() => setOpen(false)}>

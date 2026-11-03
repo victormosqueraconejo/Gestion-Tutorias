@@ -8,7 +8,10 @@ const links = [
   ['Mi historial', 'history_edu', '#mi-historial'],
 ]
 
-export function StudentSidebar() {
+export function StudentSidebar({ user }) {
+  const userName = user?.nombre || 'Estudiante'
+  const userStatus = user?.estado || 'activo'
+
   return (
     <aside className="student-sidebar">
       <div className="student-sidebar-main">
@@ -29,6 +32,7 @@ export function StudentSidebar() {
         <p>¿Tienes dudas sobre los créditos de tutoría?</p>
         <a href="#ayuda">Contactar soporte <Icon>arrow_forward</Icon></a>
       </section>
+      <span className="sr-only">Cuenta de {userName}, estado {userStatus}</span>
     </aside>
   )
 }

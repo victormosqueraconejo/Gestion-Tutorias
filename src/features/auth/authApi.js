@@ -1,15 +1,12 @@
-const SESSION_KEY = 'gestion-tutorias.usuario'
+import { getApiUrl } from '../../config/api'
 
-function getApiUrl() {
-  const baseUrl = import.meta.env.VITE_API_URL?.replace(/\/+$/, '')
-  return `${baseUrl || ''}/api/login`
-}
+const SESSION_KEY = 'gestion-tutorias.usuario'
 
 export async function loginUser({ email, password }) {
   let response
 
   try {
-    response = await fetch(getApiUrl(), {
+    response = await fetch(getApiUrl('/api/login'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ correo: email, contrasena: password }),
@@ -45,6 +42,29 @@ export function saveAuthenticatedUser(user, rememberSession) {
 
   otherStorage.removeItem(SESSION_KEY)
   storage.setItem(SESSION_KEY, serializedUser)
+}
+
+export function updateAuthenticatedUser(updates) {
+  const currentUser = getAuthenticatedUser()
+  if (!currentUser) return null
+
+  const updatedUser = {
+    ...currentUser,
+    ...updates,
+    perfil_estudiante: {
+      ...currentUser.perfil_estudiante,
+      ...updates.perfil_estudiante,
+    },
+  }
+  const serializedUser = JSON.stringify(updatedUser)
+
+  if (window.localStorage.getItem(SESSION_KEY)) {
+    window.localStorage.setItem(SESSION_KEY, serializedUser)
+  } else {
+    window.sessionStorage.setItem(SESSION_KEY, serializedUser)
+  }
+
+  return updatedUser
 }
 
 export function getAuthenticatedUser() {
