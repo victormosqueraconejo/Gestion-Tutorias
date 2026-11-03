@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Icon } from '../../../components/ui/Icon'
 import { StatusAlert } from '../../../components/ui/StatusAlert'
+import { getRolePath, loginUser, saveAuthenticatedUser } from '../authApi'
 import { validateLogin } from '../validation'
 
 const initialValues = { email: '', password: '' }
@@ -11,6 +12,7 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [status, setStatus] = useState(null)
   const [rememberSession, setRememberSession] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   function updateField(field, value) {
     setValues((current) => ({ ...current, [field]: value }))
@@ -25,8 +27,10 @@ export function LoginForm() {
     setErrors((current) => ({ ...current, [field]: fieldErrors[field] }))
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
+    if (isSubmitting) return
+
     const nextErrors = validateLogin(values)
     setErrors(nextErrors)
 
@@ -35,13 +39,28 @@ export function LoginForm() {
       return
     }
 
-    setStatus({
-      tone: 'success',
-      title: 'Datos validados',
-      message: rememberSession
-        ? 'Tus credenciales son válidas y se recordará esta sesión.'
-        : 'Tus credenciales son válidas. Ya puedes continuar.',
-    })
+    setIsSubmitting(true)
+    setStatus(null)
+
+    try {
+      const user = await loginUser(values)
+      const destination = getRolePath(user.rol)
+
+      if (!destination) {
+        throw new Error('Tu cuenta tiene un rol no reconocido. Contacta al administrador.')
+      }
+
+      saveAuthenticatedUser(user, rememberSession)
+      window.location.assign(destination)
+    } catch (error) {
+      setStatus({
+        tone: 'error',
+        title: 'No se pudo iniciar sesión',
+        message: error.message,
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -127,8 +146,8 @@ export function LoginForm() {
           <a href="#forgot-password">¿Olvidaste tu contraseña?</a>
         </div>
 
-        <button className="submit-button" type="submit">
-          <span>Ingresar</span>
+        <button className="submit-button" type="submit" disabled={isSubmitting}>
+          <span>{isSubmitting ? 'Ingresando...' : 'Ingresar'}</span>
           <Icon>arrow_forward</Icon>
         </button>
       </form>

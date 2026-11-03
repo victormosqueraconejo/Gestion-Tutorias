@@ -52,20 +52,24 @@
 .strength-panel { display: flex; flex-direction: column; gap: .75rem; padding: 1rem; border-radius: .75rem; background: var(--surface-low); }
 .strength-heading { display: flex; align-items: center; justify-content: space-between; }
 .strength-heading > span { display: flex; align-items: center; gap: .375rem; font-size: .875rem; font-weight: 600; }
-.strength-heading .material-symbols-outlined { color: var(--primary); font-size: 1.25rem; }
+.strength-heading .material-symbols-outlined { color: var(--primary); font-size: 1.25rem; transition: color 220ms ease, transform 220ms ease; }
 .strength-fuerte, .strength-media, .strength-débil { color: var(--primary); }
 .strength-media { color: var(--tertiary, #9a4600); }
 .strength-débil { color: var(--error); }
 .strength-bars { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; height: .5rem; }
-.strength-bars span { border-radius: 999px; background: var(--surface-high); }
+.strength-bars span { border-radius: 999px; background: var(--surface-high); transition: background-color 260ms ease, transform 260ms ease, opacity 260ms ease; }
+.strength-bars .strength-fill { animation: strength-bar-in 260ms ease both; }
 .strength-fill-fuerte { background: var(--primary) !important; }
 .strength-fill-media { background: var(--tertiary, #9a4600) !important; }
 .strength-fill-débil { background: var(--error) !important; }
 .requirements { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; padding-top: .25rem; }
-.requirement { display: flex; align-items: center; gap: .5rem; color: var(--on-surface-variant); font-size: .75rem; }
-.requirement .material-symbols-outlined { font-size: 1.25rem; }
+.requirement { display: flex; align-items: center; gap: .5rem; color: var(--on-surface-variant); font-size: .75rem; transition: color 220ms ease, transform 220ms ease; }
+.requirement .material-symbols-outlined { font-size: 1.25rem; transition: color 220ms ease, transform 220ms ease; }
 .requirement.met { color: var(--on-surface); }
-.requirement.met .material-symbols-outlined { color: var(--primary); }
+.requirement.met .material-symbols-outlined { color: var(--primary); transform: scale(1.08); }
+.requirement.met { animation: requirement-in 260ms ease both; }
+@keyframes strength-bar-in { from { opacity: .35; transform: scaleX(.86); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes requirement-in { from { opacity: .55; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
 .student-info { align-items: flex-start; gap: .75rem; padding: 1rem; border-radius: .75rem; color: #001b3e; background: var(--primary-fixed); }
 .student-info > span { display: grid; place-items: center; width: 2rem; height: 2rem; flex: 0 0 auto; border-radius: 999px; color: white; background: var(--primary); }
 .student-info p { margin: 0; line-height: 1.5rem; }
@@ -74,10 +78,25 @@
 .terms-row label { line-height: 1.5rem; }
 .registration-actions { justify-content: space-between; gap: 1rem; padding-top: 1rem; color: var(--on-surface-variant); text-align: right; }
 .create-button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 3rem; padding: .75rem 2rem; border: 0; border-radius: .5rem; color: white; background: var(--primary); font: inherit; font-size: .875rem; font-weight: 600; cursor: pointer; }
-.create-button:hover { background: var(--primary-container); }
+.create-button:hover { background: var(--primary-container);
+}
+
+.create-button:disabled {
+cursor: wait;
+opacity: .7; }
 .registration-footer { justify-content: space-between; gap: 1rem; margin: 0 -2rem -2rem; padding: 1rem 2rem; color: var(--on-surface-variant); background: var(--surface-high); font-size: .875rem; }
 .registration-footer span:first-child { display: flex; align-items: center; gap: .5rem; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  .strength-heading .material-symbols-outlined,
+  .strength-bars span,
+  .requirement,
+  .requirement .material-symbols-outlined {
+    animation: none;
+    transition: none;
+  }
+}
 
 @media (max-width: 700px) {
   .registration-page { padding: 0; }

@@ -493,6 +493,11 @@
   box-shadow: 0 6px 12px rgb(0 92 184 / 25%);
 }
 
+.submit-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .register-prompt {
   display: flex;
   align-items: center;

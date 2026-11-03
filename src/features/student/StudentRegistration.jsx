@@ -12,7 +12,7 @@ export function StudentRegistration() {
         </header>
         <section className="registration-card">
           <div className="registration-card-content">
-            <div className="registration-title"><div><div className="title-line"><h1>Registro de Estudiante</h1><span className="role-badge"><Icon filled>badge</Icon> Rol: Estudiante (Asignación Automática)</span></div><p>Completa tus credenciales oficiales para vincular tu matrícula y expedir tu carnet digital.</p></div><span className="step-badge"><Icon>assignment_ind</Icon> Paso 1 de 2: Credenciales</span></div>
+            <div className="registration-title"><div><div className="title-line"><h1>Registro de Estudiante</h1><span className="role-badge"><Icon filled>badge</Icon> Rol: Estudiante (Asignación Automática)</span></div><p>Completa tus credenciales oficiales para vincular tu matrícula y expedir tu carnet digital.</p></div></div>
             <StudentRegistrationForm />
           </div>
         </section>

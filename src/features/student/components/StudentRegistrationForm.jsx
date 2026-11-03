@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { Icon } from '../../../components/ui/Icon'
 import { StatusAlert } from '../../../components/ui/StatusAlert'
+import { createStudentUser } from '../studentApi'
 import { getPasswordRequirements, validateRegistration } from '../validation'
 import { PasswordStrength } from './PasswordStrength'
 
 const initialValues = {
-  fullName: 'Valeria Sofía Martínez',
-  email: 'valeria.martinez@uniautonoma.edu.co',
-  password: 'Valeria2024!',
-  confirmPassword: 'Valeria2024!',
+  fullName: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
   career: 'sistemas',
   semester: '4',
   acceptTerms: true,
@@ -39,20 +40,50 @@ export function StudentRegistrationForm() {
   const [errors, setErrors] = useState({})
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
-  const [bannerVisible, setBannerVisible] = useState(true)
-  const [success, setSuccess] = useState(false)
+  const [status, setStatus] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   function update(field, value) {
     setValues((current) => ({ ...current, [field]: value }))
-    setSuccess(false)
+    setStatus(null)
     if (errors[field]) setErrors((current) => ({ ...current, [field]: undefined }))
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
+    if (isSubmitting) return
+
     const nextErrors = validateRegistration(values)
     setErrors(nextErrors)
-    setSuccess(Object.keys(nextErrors).length === 0)
+    if (Object.keys(nextErrors).length > 0) {
+      setStatus(null)
+      return
+    }
+
+    setIsSubmitting(true)
+    setStatus(null)
+
+    try {
+      await createStudentUser({
+        name: values.fullName,
+        email: values.email,
+        password: values.password,
+      })
+      setStatus({
+        tone: 'success',
+        title: 'Cuenta creada correctamente',
+        message: 'Tu cuenta de estudiante fue creada. Ya puedes iniciar sesión con tus credenciales.',
+      })
+      setValues((current) => ({ ...current, password: '', confirmPassword: '' }))
+    } catch (error) {
+      setStatus({
+        tone: 'error',
+        title: 'No se pudo crear la cuenta',
+        message: error.message,
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const passwordError = errors.password
@@ -60,34 +91,20 @@ export function StudentRegistrationForm() {
 
   return (
     <form className="registration-form" onSubmit={handleSubmit} noValidate>
-      {bannerVisible && (
-        <div className="registration-conflict" role="alert">
-          <Icon>error</Icon>
-          <div>
-            <div className="conflict-heading">
-              <strong>Conflicto en la identificación de usuario</strong>
-              <button type="button" aria-label="Cerrar alerta" onClick={() => setBannerVisible(false)}><Icon>close</Icon></button>
-            </div>
-            <p>Este correo ya está registrado en el sistema. Inicia sesión o solicita recuperación de cuenta.</p>
-            <div className="conflict-links"><a href="/">Iniciar sesión ahora</a><a href="#recover">Recuperar acceso</a></div>
-          </div>
-        </div>
-      )}
-
-      {success && <StatusAlert tone="success" title="Registro validado" message="La información está completa y lista para crear tu cuenta." />}
+      {status && <StatusAlert {...status} />}
 
       <div className="registration-grid">
         <Field id="fullName" label="Nombre completo" error={errors.fullName} help="Conforme a tu documento oficial de identidad">
-          <div className="registration-input"><Icon>person</Icon><input id="fullName" value={values.fullName} onChange={(event) => update('fullName', event.target.value)} aria-invalid={Boolean(errors.fullName)} /></div>
+          <div className="registration-input"><Icon>person</Icon><input id="fullName" value={values.fullName} onChange={(event) => update('fullName', event.target.value)} placeholder="Ingresa tu nombre completo" aria-invalid={Boolean(errors.fullName)} /></div>
         </Field>
         <Field id="instEmail" label="Correo institucional" error={errors.email} help="Usa tu correo institucional para continuar">
-          <div className="registration-input"><Icon>mail</Icon><input id="instEmail" type="email" value={values.email} onChange={(event) => update('email', event.target.value)} aria-invalid={Boolean(errors.email)} /></div>
+          <div className="registration-input"><Icon>mail</Icon><input id="instEmail" type="email" value={values.email} onChange={(event) => update('email', event.target.value)} placeholder="Ingresa tu correo institucional" aria-invalid={Boolean(errors.email)} /></div>
         </Field>
         <Field id="pwdInput" label="Contraseña" error={passwordError}>
-          <div className="registration-input"><Icon>lock</Icon><input id="pwdInput" type={showPassword ? 'text' : 'password'} value={values.password} onChange={(event) => update('password', event.target.value)} aria-invalid={Boolean(passwordError)} /><button type="button" aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'} onClick={() => setShowPassword((visible) => !visible)}><Icon>{showPassword ? 'visibility_off' : 'visibility'}</Icon></button></div>
+          <div className="registration-input"><Icon>lock</Icon><input id="pwdInput" type={showPassword ? 'text' : 'password'} value={values.password} onChange={(event) => update('password', event.target.value)} placeholder="Crea una contraseña" aria-invalid={Boolean(passwordError)} /><button type="button" aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'} onClick={() => setShowPassword((visible) => !visible)}><Icon>{showPassword ? 'visibility_off' : 'visibility'}</Icon></button></div>
         </Field>
         <Field id="confirmPwdInput" label="Confirmar contraseña" error={errors.confirmPassword}>
-          <div className="registration-input"><Icon>lock_reset</Icon><input id="confirmPwdInput" type={showConfirm ? 'text' : 'password'} value={values.confirmPassword} onChange={(event) => update('confirmPassword', event.target.value)} aria-invalid={Boolean(errors.confirmPassword)} /><button type="button" aria-label={showConfirm ? 'Ocultar confirmación' : 'Mostrar confirmación'} onClick={() => setShowConfirm((visible) => !visible)}><Icon>{showConfirm ? 'visibility_off' : 'visibility'}</Icon></button></div>
+          <div className="registration-input"><Icon>lock_reset</Icon><input id="confirmPwdInput" type={showConfirm ? 'text' : 'password'} value={values.confirmPassword} onChange={(event) => update('confirmPassword', event.target.value)} placeholder="Repite la contraseña" aria-invalid={Boolean(errors.confirmPassword)} /><button type="button" aria-label={showConfirm ? 'Ocultar confirmación' : 'Mostrar confirmación'} onClick={() => setShowConfirm((visible) => !visible)}><Icon>{showConfirm ? 'visibility_off' : 'visibility'}</Icon></button></div>
         </Field>
 
         <div className="registration-wide"><PasswordStrength password={values.password} /></div>
@@ -103,7 +120,7 @@ export function StudentRegistrationForm() {
       <div className="student-info"><span><Icon>info</Icon></span><p>Tu cuenta será configurada automáticamente con perfil de <strong>Estudiante activo</strong>. Tendrás acceso inmediato al campus virtual, biblioteca y horario de clases.</p></div>
       <div className={`terms-row ${errors.acceptTerms ? 'has-error' : ''}`}><input id="termsCheckbox" type="checkbox" checked={values.acceptTerms} onChange={(event) => update('acceptTerms', event.target.checked)} /><label htmlFor="termsCheckbox">Acepto los <a href="#terms">Términos y Condiciones</a> institucionales y autorizo expresamente el <a href="#privacy">Tratamiento de Datos Personales</a> para fines académicos y administrativos de la Universidad.</label></div>
       {errors.acceptTerms && <span className="registration-error">{errors.acceptTerms}</span>}
-      <div className="registration-actions"><button className="create-button" type="submit">Crear cuenta de estudiante <Icon>arrow_forward</Icon></button><span>¿Ya tienes una cuenta? <a href="/">Inicia sesión</a></span></div>
+      <div className="registration-actions"><button className="create-button" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Creando cuenta...' : 'Crear cuenta de estudiante'} <Icon>arrow_forward</Icon></button><span>¿Ya tienes una cuenta? <a href="/">Inicia sesión</a></span></div>
       <div className="registration-footer"><span><Icon>help</Icon> ¿Dudas con la matrícula? Contacta a <a href="mailto:soporte.academico@uniautonoma.edu.co">soporte.academico@uniautonoma.edu.co</a></span><span>Código de formulario: REG-EST-HU11</span></div>
       <span className="sr-only">{Object.values(requirements).filter(Boolean).length} de 4 requisitos de contraseña cumplidos</span>
     </form>
