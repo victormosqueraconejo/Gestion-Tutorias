@@ -7,7 +7,11 @@ import { StudentHome } from './features/student/StudentHome'
 import { TeacherDashboard } from './features/teacher/TeacherDashboard'
 import { AdministratorDashboard } from './features/administrator/AdministratorDashboard'
 import { AdministratorUsers } from './features/administrator/AdministratorUsers'
+import { AddScheduleModal } from './features/teacher/components/AddScheduleModal'
 import { AdministratorAcademicStructure } from './features/administrator/AdministratorAcademicStructure'
+import { AcceptRequestModal } from './features/teacher/components/AcceptRequestModal'
+import { AddResourceModal } from './features/teacher/components/NewResourceModal'
+import { TutoringSessionDetail } from './features/teacher/components/TutoringSessionDetail'
 import './App.css'
 
 function App() {
@@ -45,6 +49,25 @@ function App() {
 
   if (['/administrador', '/administrador/inicio', '/admin'].includes(window.location.pathname)) {
     return <AdministratorDashboard />
+  }
+
+  if (window.location.pathname === '/profesor/horarios') {
+    return <AddScheduleModal />
+  }
+
+  if (window.location.pathname === '/profesor/solicitudes') {
+    return <AcceptRequestModal />
+  }
+
+  if (window.location.pathname === '/profesor/recursos') {
+    return <AddResourceModal />
+  }
+
+  if (
+    window.location.pathname.startsWith('/profesor/tutorias') ||
+    window.location.pathname === '/profesor/mis-tutorias'
+  ) {
+    return <TutoringSessionDetail />
   }
 
   return (
